@@ -10,7 +10,7 @@ using Clustering::Point;
 
 namespace Clustering {
 	typedef Point * PointPtr;
-	LNode::LNode(const Point & p, LNodePtr n): point(p), next(n) {}
+	LNode::LNode(const Point & p, LNodePtr n) : point(p), next(n) {}
 
 	/*void Cluster::__del()
 	{
@@ -18,7 +18,7 @@ namespace Clustering {
 
 	void Cluster::__cpy(LNodePtr pts)
 	{
-	
+
 	}*/
 
 	Cluster::Cluster()
@@ -71,7 +71,6 @@ namespace Clustering {
 			}
 		}
 	}
-
 
 	Cluster & Cluster::operator=(const Cluster & c1)
 	{
@@ -153,36 +152,36 @@ namespace Clustering {
 	}
 
 	const Point &Cluster::remove(const Point &p) {
-        if (contains(p)) {
-            // Point is in list
-            LNodePtr Nptr;
-            LNodePtr Pptr = nullptr;
+		if (contains(p)) {
+			// Point is in list
+			LNodePtr Nptr;
+			LNodePtr Pptr = nullptr;
 
-            Nptr = __points;
+			Nptr = __points;
 
-            while (Nptr != nullptr) {
-                if (Nptr->point == p) {
-                    if (Pptr == nullptr) {
-                        __points = Nptr->next;
-                        delete Nptr;
-                        __size--;
+			while (Nptr != nullptr) {
+				if (Nptr->point == p) {
+					if (Pptr == nullptr) {
+						__points = Nptr->next;
+						delete Nptr;
+						__size--;
 
-                        break;
-                    }
-                    else {
-                        Pptr->next = Nptr->next;
-                        delete Nptr;
-                        --__size;
-                        break;
-                    }
-                }
-                Pptr = Nptr;
-                Nptr = Nptr->next;
-            }
-        }
+						break;
+					}
+					else {
+						Pptr->next = Nptr->next;
+						delete Nptr;
+						--__size;
+						break;
+					}
+				}
+				Pptr = Nptr;
+				Nptr = Nptr->next;
+			}
+		}
 
-        return p;
-    }
+		return p;
+	}
 
 	bool Cluster::contains(const Point &p) {
 		LNodePtr next = __points;
@@ -220,9 +219,14 @@ namespace Clustering {
 		return *this;
 	}
 
-	Cluster &Cluster::operator+=(const Cluster &rhs) {
-		for (int i = 0; i < rhs.getSize(); ++i) {
-			add(rhs[i]);
+	Cluster &Cluster::operator+=(const Cluster &arg_Cluster)
+	{
+		LNodePtr cursor_right = arg_Cluster.__points;
+
+		for (; cursor_right != NULL; cursor_right = cursor_right->next)
+		{
+			if (!(this->contains(cursor_right->point)))
+				add(cursor_right->point);
 		}
 
 		return *this;
@@ -236,19 +240,14 @@ namespace Clustering {
 		return *this;
 	}
 
-	std::ostream &operator<<(std::ostream &os, const Cluster &c)
-	{
-		LNodePtr csr = c.__points;
-		if (&csr != NULL)
-		{
-			for (; &csr->point != NULL; csr = csr->next)
-			{
-				os << csr->point;
-				if (&csr->next != NULL)
-					os << "\n";
-			}
+	std::ostream &operator<<(std::ostream &out, const Cluster &cluster) {
+		out << std::setprecision(20);
+		for (int i = 0; i < cluster.getSize(); ++i) {
+			out << cluster[i] << std::endl;
+			//std::cout << cluster[i] << std::endl;
 		}
-		return os;
+
+		return out;
 	}
 
 	std::istream &operator>>(std::istream &ins, Cluster &c)
