@@ -1,3 +1,4 @@
+// Sumner Bradley
 #include "Point.h"
 
 using _CMATH_::sqrt;

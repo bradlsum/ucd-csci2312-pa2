@@ -1,3 +1,4 @@
+// Sumner Bradley
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -27,47 +28,41 @@ namespace Clustering {
 		__points = NULL;
 	}
 
-	Cluster::Cluster(const Cluster &arg_Cluster)
+	Cluster::Cluster(const Cluster &c)
 	{
-		if (&arg_Cluster == this)
+		
+		if (c.__points == NULL)
 		{
-			// DO NOTHING
-		}
-		else if (arg_Cluster.__points == NULL)
-		{
-			// INSTANTIATE EMPTY CLUSTER
 			__size = 0;
 			__points = NULL;
 		}
-		// ELSE DO CONSTRUCTOR
 		else
 		{
 			__size = 0;
 
-			// DO MEMBERWISE ASSIGNMENT
-			LNodePtr cursor_oldCluster = arg_Cluster.__points;
+			LNodePtr oldptr = c.__points;
 
 			PointPtr newPoint;
-			newPoint = new Point(arg_Cluster.__points->point);
-			__points = new LNode(/*POINT, NEXT*/ *newPoint, NULL);
+			newPoint = new Point(c.__points->point);
+			__points = new LNode(*newPoint, NULL);
 			++__size;
 
-			LNodePtr cursor_newCluster = __points;
-			LNodePtr prev_newCluster = cursor_newCluster;
-			cursor_oldCluster = cursor_oldCluster->next;
+			// Pointers
+			LNodePtr crs = __points;
+			LNodePtr pre = crs;
+			oldptr = oldptr->next;
 
-			for (; cursor_oldCluster != NULL; cursor_oldCluster = cursor_oldCluster->next)
+			for (; oldptr != NULL; oldptr = oldptr->next)
 			{
 
-				newPoint = new Point(cursor_oldCluster->point);
-				cursor_newCluster = new LNode(/*POINT, NEXT*/ *newPoint, NULL);
+				newPoint = new Point(oldptr->point);
+				crs = new LNode(*newPoint, NULL);
 
-				prev_newCluster->next = cursor_newCluster;
+				pre->next = crs;
 
 				++__size;
 
-				prev_newCluster = cursor_newCluster;
-				//				__points = arg_Cluster.__points;
+				pre = crs;
 			}
 		}
 	}
@@ -94,14 +89,13 @@ namespace Clustering {
 
 	void Cluster::add(const Clustering::Point & p) {
 
-		PointPtr newPoint;
-		newPoint = new Point(p);
-
+		PointPtr Newp;
+		Newp = new Point(p);
 
 		if (__points == NULL)
 		{
 			LNodePtr newNode;
-			newNode = new LNode(*newPoint, NULL);
+			newNode = new LNode(*Newp, NULL);
 			__points = newNode;
 			__size = 1;
 
@@ -110,42 +104,52 @@ namespace Clustering {
 		{
 			LNodePtr Npre;
 			LNodePtr cur;
+
+
 			Npre = __points;
+
 			cur = Npre->next;
 
-			LNodePtr insertBefore = NULL;
+			LNodePtr iBef = NULL;
 
 			if (cur == NULL)
 			{
 				if (p < Npre->point)
-					insertBefore = Npre;
-				else insertBefore = cur;
+
+					iBef = Npre;
+
+				else iBef = cur;
 			}
 			else
 			{
 				if (p < Npre->point)
-					insertBefore = Npre;
+					iBef = Npre;
 
-				for (; insertBefore == NULL && cur != NULL; cur = cur->next)
+				for (; iBef == NULL && cur != NULL; cur = cur->next)
 				{
 					if (p < cur->point)
-						insertBefore = cur;
+						iBef = cur;
 					else
 						Npre = cur;
 				}
 			}
-			if (insertBefore == __points)
+			if (iBef == __points)
 			{
 				LNodePtr newNode;
-				newNode = new LNode(*newPoint, __points);
+
+				newNode = new LNode(*Newp, __points);
+
 				__points = newNode;
 				++__size;
 			}
 			else
 			{
 				LNodePtr newNode;
-				newNode = new LNode(*newPoint, insertBefore);
+
+				newNode = new LNode(*Newp, iBef);
+
 				Npre->next = newNode;
+
 				++__size;
 			}
 		}
@@ -153,7 +157,6 @@ namespace Clustering {
 
 	const Point &Cluster::remove(const Point &p) {
 		if (contains(p)) {
-			// Point is in list
 			LNodePtr Nptr;
 			LNodePtr Pptr = nullptr;
 
@@ -171,11 +174,13 @@ namespace Clustering {
 					else {
 						Pptr->next = Nptr->next;
 						delete Nptr;
+
 						--__size;
 						break;
 					}
 				}
 				Pptr = Nptr;
+
 				Nptr = Nptr->next;
 			}
 		}
@@ -239,12 +244,12 @@ namespace Clustering {
 
 		return *this;
 	}
-
+	
 	std::ostream &operator<<(std::ostream &out, const Cluster &cluster) {
 		out << std::setprecision(20);
 		for (int i = 0; i < cluster.getSize(); ++i) {
 			out << cluster[i] << std::endl;
-			//std::cout << cluster[i] << std::endl;
+			std::cout << cluster[i] << std::endl;
 		}
 
 		return out;
@@ -252,26 +257,27 @@ namespace Clustering {
 
 	std::istream &operator>>(std::istream &ins, Cluster &c)
 	{
-		std::string line, buffer;
-		PointPtr newPoint = NULL;
-		while (getline(ins, line))
+		std::string value, buf;
+		PointPtr Newp = NULL;
+		while (getline(ins, value))
 		{
 			int pointSize = 0;
 
-			std::stringstream lineStream_count(line);
-			std::stringstream lineStream_do(line);
+			std::stringstream lineStream_count(value);
 
-			while (getline(lineStream_count, buffer, ','))
+			std::stringstream lineStream_do(value);
+
+			while (getline(lineStream_count, buf, ','))
 				++pointSize;
 
-			newPoint = new Point(pointSize);
-			lineStream_do >> *newPoint;
-			c.add(*newPoint);
+			Newp = new Point(pointSize);
+			lineStream_do >> *Newp;
+			c.add(*Newp);
 
 		}
 		return ins;
 	}
-
+	
 	bool operator==(const Cluster &c, const Cluster &cr)
 	{
 		bool Equal = true;
@@ -305,14 +311,16 @@ namespace Clustering {
 
 	const Cluster operator+(const Cluster &c, const Point &p)
 	{
-		Cluster newCluster(c);
-		return newCluster += p;
+		Cluster sum(c);
+		sum += p;
+		return sum;
 	}
 
 	const Cluster operator-(const Cluster &c, const Point &p)
 	{
-		Cluster newCluster(c);
-		return newCluster -= p;
+		Cluster sub(c);
+		sub -= p;
+		return sub;
 	}
 
 	const Cluster operator+(const Cluster &c, const Cluster &cr)
