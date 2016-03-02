@@ -1,5 +1,10 @@
 #include "Point.h"
+
+using _CMATH_::sqrt;
+
 namespace Clustering {
+
+	unsigned int Point::__idGen = 0;
 
 	// Constructor
 	Clustering::Point::Point(int dim)
@@ -7,6 +12,12 @@ namespace Clustering {
 		__id = __idGen;
 		__idGen++;
 		__dim = dim;
+
+		__values = new double[__dim];
+
+		for (int i = 0; i < __dim;++i) {
+			__values[i] = 0.0;
+		}
 	}
 
 	// Two varriable constructor
@@ -21,22 +32,31 @@ namespace Clustering {
 	// Copy constructor
 	Clustering::Point::Point(const Point & npoint)
 	{
-		this->__id = npoint.getId();
-		this->__dim = npoint.getDims();
+		__dim = npoint.getDims();
+		__id = npoint.getId();
+		__values = new double[npoint.getDims()];
+
+		for (int i = 0; i < npoint.getDims();++i) setValue(i, npoint.getValue(i));
 	}
 
 	// Assignment operator
 	Point & Clustering::Point::operator=(const Point & npoint)
 	{
-		// TODO: insert return statement here
-		Point copypoint = 0;
-		copypoint.setValue(npoint.getId(), npoint.getDims());
-
-		return copypoint;
+		for (int i = 0; i < __dim;++i) {
+			this->__values[i] = npoint.getValue(i);
+		}
+		return *this;
 	}
 
 	// Destructor
-	Clustering::Point::~Point() {}
+	Clustering::Point::~Point() {
+		if (__values != NULL)
+	{
+		delete[] __values;
+	}
+		__values = NULL;
+
+	}
 
 	// Accessors & mutators
 	int Clustering::Point::getId() const
@@ -49,15 +69,14 @@ namespace Clustering {
 		return __dim;
 	}
 
-	void Clustering::Point::setValue(int id, double dim)
+	void Clustering::Point::setValue(int i, double v)
 	{
-		__id = id;
-		__dim = dim;
+		__values[i] = v;
 	}
 
-	double Clustering::Point::getValue(int) const
+	double Clustering::Point::getValue(int i) const
 	{
-		return *__values;
+		return __values[i];
 	}
 
 	// Functions
@@ -70,43 +89,50 @@ namespace Clustering {
 
 		}
 
-		return distance;
+		return sqrt(distance);
 	}
 
 	// Members
 	Point & Clustering::Point::operator*=(double x)
 	{
-		Point p(0);
+		for (int i = 0; i < __dim;++i) {
+
+			__values[i] *= x;
+		}
+
 		// TODO: insert return statement here
-		return p *= x;
+		return *this;
 	}
 
 	Point & Clustering::Point::operator/=(double x)
 	{
-		Point p(0);
+		for (int i = 0; i < __dim;++i) {
+			__values[i] = __values[i] / x;
+		}
 		// TODO: insert return statement here
-		return p /= x;
+		return *this;
 	}
 
 	const Point Clustering::Point::operator*(double x) const
 	{
-		Point p(0);
-
-		return p * x;
+		for (int i = 0; i < __dim;++i) {
+			__values[i] = __values[i] * x;
+		}
+		return *this;
 	}
 
 	const Point Clustering::Point::operator/(double x) const
 	{
-		Point p(0);
-
-		return p / x;
+		for (int i = 0; i < __dim;++i) {
+			__values[i] = __values[i] / x;
+		}
+		return *this;
 	}
 
 	double & Clustering::Point::operator[](int index)
 	{
-		Point p(0);
 		// TODO: insert return statement here
-		return p[index];
+		return __values[index];
 	}
 
 	Point &operator+=(Point &arg_Point_left, const Point &arg_Point_right)

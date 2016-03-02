@@ -54,6 +54,6 @@ int main() {
     test_cluster_CAO(ec, NumIters);
     test_cluster_SAO(ec, NumIters);
     test_cluster_IO(ec, NumIters);
-
+	
     return 0;
 }
