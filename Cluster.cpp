@@ -13,7 +13,7 @@ namespace Clustering {
 	typedef Point * PointPtr;
 	LNode::LNode(const Point & p, LNodePtr n) : point(p), next(n) {}
 
-	void Cluster::__del()
+	/*void Cluster::__del()
 	{
 	}
 
@@ -25,7 +25,7 @@ namespace Clustering {
 	bool Cluster::__in(const LNodePtr pts) const
 	{
 
-	}
+	}*/
 
 	Cluster::Cluster()
 	{
